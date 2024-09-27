@@ -1,30 +1,40 @@
-//graficador de funcines en el lenguaje de python//
+# graficador de funcines en
+# lenguaje de python
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Definir la función
+# Solicitar la función al usuario
+funcion = input("Ingrese la función aqui uwu : ")
+
+# Solicitar el límite inferior y superior del intervalo
+limite_inferior = float(input("Ingrese el límite inferior del intervalo, el minimo: "))
+limite_superior = float(input("Ingrese el límite superior del intervalo, el maximo: "))
+
+# Crear una función que evalúe la entrada del usuario
 def f(x):
-    return x ** 2
+    return eval(funcion)
 
 # Rango de valores para la variable independiente x
-x = np.linspace(-5, 5, 400)
+x = np.linspace(limite_inferior, limite_superior, 400)
 
 # Evaluar la función en los valores de x
 y = f(x)
 
 # Crear la gráfica
-plt.plot(x, y, label='$f(x) = x^2$')
+plt.plot(x, y, label=f'$f(x) = {funcion}$')
 
 # Añadir etiquetas a los ejes
 plt.xlabel('$x$')
 plt.ylabel('$f(x)$')
 
 # Añadir título al gráfico
-plt.title('Gráfico de $f(x) = x^2$ en el intervalo [-5, 5]')
+plt.title(f'Visualización de la gráfica de $f(x)$ en el intervalo [{limite_inferior}, {limite_superior}]')
 
 # Mostrar leyenda
 plt.legend()
 
-# Mostrar la gráfica
+# Mostrar cuadrícula
 plt.grid(True)
+
+# Mostrar la gráfica
 plt.show()
