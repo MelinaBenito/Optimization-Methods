@@ -1,0 +1,81 @@
+import streamlit as st
+import numpy as np
+
+# Función para realizar la eliminación gaussiana paso a paso, mostrando las operaciones
+def eliminacion_gaussiana_detallada(A, b, mostrar_detalle=False):
+    n = len(b)
+    Ab = np.hstack([A, b.reshape(-1, 1)])  # Augmentamos la matriz con el vector b
+    
+    st.write("Matriz aumentada inicial:")
+    st.write(Ab)
+    
+    # Fase de eliminación
+    for i in range(n):
+        # Pivoteo parcial
+        max_row = np.argmax(np.abs(Ab[i:, i])) + i
+        if i != max_row:
+            Ab[[i, max_row]] = Ab[[max_row, i]]
+        
+        st.write(f"Paso {i+1}: Matriz después del pivoteo (si es necesario):")
+        st.write(Ab)
+        
+        # Hacer ceros debajo del pivote
+        for j in range(i + 1, n):
+            factor = Ab[j, i] / Ab[i, i]
+            if mostrar_detalle:
+                st.write(f"Operación en fila {j+1}: Fila{j+1} = Fila{j+1} - ({factor:.4f}) * Fila{i+1}")
+            
+            Ab[j, i:] -= factor * Ab[i, i:]
+        
+        st.write(f"Paso {i+1}: Matriz después de hacer ceros debajo del pivote:")
+        st.write(Ab)
+    
+    # Sustitución hacia atrás
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        x[i] = (Ab[i, -1] - np.dot(Ab[i, i + 1:n], x[i + 1:n])) / Ab[i, i]
+        if mostrar_detalle:
+            st.write(f"Operación sustitución hacia atrás para x[{i+1}]:")
+            st.write(f"x[{i+1}] = ({Ab[i, -1]}) - ({np.dot(Ab[i, i+1:n], x[i+1:n])}) / {Ab[i,i]} = {x[i]}")
+    
+    return x
+
+# Streamlit UI
+st.title("Eliminación Gaussiana")
+
+st.write("""
+    Hola,este sistema web resuelve un sistema de ecuaciones lineales utilizando el método de eliminación de Gauss Jordan,
+puedes introducir cualquier matriz que desees resolver, ademas este sistema te permite optar por ver las operaciones realizadas en cada paso.
+""")
+
+# Entrada de la matriz A
+n = st.number_input('Ingrese el tamaño del sistema (n x n)', min_value=2, max_value=10, value=3, step=1)
+
+st.write(f'Ingrese los valores para la matriz A ({n}x{n}):')
+A = np.zeros((n, n))
+for i in range(n):
+    for j in range(n):
+        A[i, j] = st.number_input(f'Elemento A[{i+1}, {j+1}]', value=float(0), format="%f")
+
+# Entrada del vector b
+st.write(f'Ingrese los valores para el vector b (tamaño {n}):')
+b = np.zeros(n)
+for i in range(n):
+    b[i] = st.number_input(f'Elemento b[{i+1}]', value=float(0), format="%f")
+
+# Opción para mostrar los detalles
+mostrar_detalle = st.checkbox("Mostrar ejercicio detalladamente")
+
+# Botón para mostrar la matriz y resolver
+if st.button('Mostrar matriz y resolver'):
+    st.write("Matriz A ingresada:")
+    st.write(A)
+    
+    st.write("Vector b ingresado:")
+    st.write(b)
+    
+    # Solución mediante eliminación gaussiana
+    solucion = eliminacion_gaussiana_detallada(A, b, mostrar_detalle)
+    
+    st.write("Solución del sistema:")
+    st.write(solucion)
